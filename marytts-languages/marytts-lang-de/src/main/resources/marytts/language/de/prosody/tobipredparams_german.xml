@@ -49,7 +49,7 @@ f) condition with tag "prosodicPosition" and attribute "type": determines the po
 Possible values are "prenuclear", "postnuclear", "nuclearParagraphFinal" and "nuclearNonParagraphFinal" and their negation.
 
 g) condition with tag "specialPosition" and attribute "type":  
-Possible values are only: "enfofpar"(end of paragraph), "vorfeld", "endofvorfeld" and their negations.
+Possible values are only: "endofpar"(end of paragraph), "vorfeld", "endofvorfeld" and their negations.
 -->
 
 <tobipredparams>
@@ -373,10 +373,28 @@ Possible values are only: "enfofpar"(end of paragraph), "vorfeld", "endofvorfeld
 
   <rule> <!-- major boundary at end after declarative sentence at end of paragraph -->
     <sentence type="decl"/>
-    <specialPosition type="endofpar"/>
+    <specialPosition type="endofpar_FM"/>
     <action bi="6" tone="L-%"/>
   </rule>
+
+  <rule> <!-- major boundary at end after declarative sentence at end of paragraph -->
+    <sentence type="decl"/>
+    <specialPosition type="endofpar_MM"/>
+    <action bi="7" tone="L-%"/>
+  </rule>
   
+  <rule> <!-- major boundary at end after declarative sentence at end of paragraph -->
+    <sentence type="decl"/>
+    <specialPosition type="endofpar_ML"/>
+    <action bi="8" tone="L-%"/>
+  </rule>
+  
+  <rule> <!-- major boundary at end after declarative sentence at end of paragraph -->
+    <sentence type="decl"/>
+    <specialPosition type="endofdisc"/>
+    <action bi="9" tone="L-%"/>
+  </rule>
+
   <rule> <!-- major boundary at end of exclamative sentence at end of paragraph -->
     <sentence type="excl"/>
     <specialPosition type="endofpar"/>

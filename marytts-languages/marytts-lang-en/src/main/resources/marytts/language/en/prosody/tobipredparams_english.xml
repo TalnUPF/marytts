@@ -77,7 +77,7 @@ f) condition with tag "prosodicPosition" and attribute "type": determines the po
 Possible values are "prenuclear", "postnuclear", "nuclearParagraphFinal" and "nuclearNonParagraphFinal" and their negation.
 
 g) condition with tag "specialPosition" and attribute "type":  
-Possible values are only: "enfofpar"(end of paragraph) and "endofvorfeld"(end of the Vorfeld in German or other language with Vorfeld) and their negations.
+Possible values are only: "endofpar"(end of paragraph) and "endofvorfeld"(end of the Vorfeld in German or other language with Vorfeld) and their negations.
 -->
 
 <tobipredparams>
@@ -257,7 +257,7 @@ Possible values are only: "enfofpar"(end of paragraph) and "endofvorfeld"(end of
   </rule>
 </accentshape>
 
-<!-- the boundaries rules determine if a boundary has to bo inserted after the current token; the rules also determine break index and boundary tone -->
+<!-- the boundaries rules determine if a boundary has to be inserted after the current token; the rules also determine break index and boundary tone -->
 <boundaries>
   <rule> <!-- if there is a punctuation mark at the beginning of sentence, no boundary will be inserted after it-->  
     <prevTokens num="0"/>
@@ -273,8 +273,26 @@ Possible values are only: "enfofpar"(end of paragraph) and "endofvorfeld"(end of
   
   <rule> <!-- major boundary at end of declarative sentence at end of paragraph -->
     <sentence type="decl"/>
-    <specialPosition type="endofpar"/>
+    <specialPosition type="endofpar_FM"/>
     <action bi="6" tone="L-L%"/>
+  </rule>
+
+  <rule> <!-- major boundary at end of declarative sentence at end of paragraph -->
+    <sentence type="decl"/>
+    <specialPosition type="endofpar_MM"/>
+    <action bi="7" tone="L-L%"/>
+  </rule>
+  
+  <rule> <!-- major boundary at end of declarative sentence at end of paragraph -->
+    <sentence type="decl"/>
+    <specialPosition type="endofpar_ML"/>
+    <action bi="8" tone="L-L%"/>
+  </rule>
+
+  <rule> <!-- major boundary at end of declarative sentence at end of paragraph -->
+    <sentence type="decl"/>
+    <specialPosition type="endofdisc"/>
+    <action bi="9" tone="L-L%"/>
   </rule>
   
   <rule> <!-- major boundary at end of exclamative sentence at end of paragraph -->
@@ -338,7 +356,7 @@ Possible values are only: "enfofpar"(end of paragraph) and "endofvorfeld"(end of
     <action bi="4" tone="H-L%"/>
   </rule>
   
-  <rule> <!-- before CC, bur not in a coordinate adjective or noun phrase -->
+  <rule> <!-- before CC, but not in a coordinate adjective or noun phrase -->
     <nextAttributes pos="CC" syn_phrase="!INLIST:conj_phrases"/>
     <action bi="3" tone="H-"/>
   </rule>

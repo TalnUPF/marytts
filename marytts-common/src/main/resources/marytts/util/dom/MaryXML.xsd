@@ -634,6 +634,9 @@ THIS SOFTWARE.
                     <xsd:enumeration value="4"/>
                     <xsd:enumeration value="5"/>
                     <xsd:enumeration value="6"/>
+                    <xsd:enumeration value="7"/>
+                    <xsd:enumeration value="8"/>
+                    <xsd:enumeration value="9"/>
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
