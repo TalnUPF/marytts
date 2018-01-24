@@ -324,6 +324,8 @@ public class Request {
 			outputData.setAudioFileFormat(audioFileFormat);
 		}
 		int len = inputDataList.getLength();
+		MaryXML.NUM_PARAGRAPHS = len;
+		System.out.println("num paragraphs: " + MaryXML.NUM_PARAGRAPHS);
 		for (int i = 0; i < len && !abortRequested; i++) {
 			Element currentInputParagraph = (Element) inputDataList.item(i);
 			assert currentInputParagraph.getTagName().equals(MaryXML.PARAGRAPH);

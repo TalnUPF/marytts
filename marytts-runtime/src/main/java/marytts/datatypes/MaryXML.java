@@ -39,6 +39,7 @@ public class MaryXML {
 	public static final String MARYXML = "maryxml";
 	public static final String PARAGRAPH = "p";
 	public static final String SENTENCE = "s";
+	// public static final String TEXT = "txt";
 	public static final String VOICE = "voice";
 	public static final String PHRASE = "phrase";
 	public static final String MARK = "mark";
@@ -53,6 +54,8 @@ public class MaryXML {
 	public static final String PHONE = "ph";
 	// public static final String NONVERBAL = "nvv";
 	public static final String NONVERBAL = "vocalization";
+	
+	public static int NUM_PARAGRAPHS = 0;
 
 	private static String version = "0.5";
 	private static String namespace = "http://mary.dfki.de/2002/MaryXML";
