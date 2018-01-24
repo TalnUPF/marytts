@@ -35,6 +35,7 @@ import marytts.features.FeatureProcessorManager;
 import marytts.features.FeatureRegistry;
 import marytts.modules.acoustic.Model;
 import marytts.modules.acoustic.ProsodyElementHandler;
+import marytts.modules.acoustic.ProsodyParagraphHandler;
 import marytts.modules.phonemiser.Allophone;
 import marytts.modules.phonemiser.AllophoneSet;
 import marytts.modules.synthesis.Voice;
@@ -253,11 +254,14 @@ public class AcousticModeller extends InternalModule {
 		}
 
 		// Once prosody values are predicted apply modifications if any
+		logger.debug("\nApplying paragraph-based prosody modifications:");
+		ProsodyParagraphHandler prosodyParagraph = new ProsodyParagraphHandler();
+		prosodyParagraph.process(doc);
 		logger.debug("\nApplying prosody modification if any:");
 		ProsodyElementHandler prosodyHandler = new ProsodyElementHandler();
 		// TODO catch exceptions thrown by prosodyHandler:
 		prosodyHandler.process(doc);
-
+		
 		output.setDocument(doc);
 
 		return output;

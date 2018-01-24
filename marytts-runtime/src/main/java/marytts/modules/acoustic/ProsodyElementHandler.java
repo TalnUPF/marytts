@@ -450,7 +450,7 @@ public class ProsodyElementHandler {
 		double fDuration = 0.001 * (new Double(firstElement.getAttribute("d"))).doubleValue();
 		double lEnd = (new Double(lastElement.getAttribute("end"))).doubleValue();
 		double fStart = fEnd - fDuration; // 'prosody' tag starting point
-		double duration = lEnd - fStart; // duaration of 'prosody' modification request
+		double duration = lEnd - fStart; // duration of 'prosody' modification request
 
 		for (int i = 0; i < nl.getLength(); i++) {
 			Element e = (Element) nl.item(i);
