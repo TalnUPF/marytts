@@ -25,6 +25,7 @@ import java.util.List;
 
 import marytts.features.FeatureProcessorManager;
 import marytts.unitselection.select.Target;
+//import marytts.datatypes.MaryXML;
 
 import org.w3c.dom.Element;
 
@@ -46,9 +47,28 @@ public class BoundaryModel extends Model {
 	@Override
 	public void applyTo(List<Element> elements) {
 		for (Element element : elements) {
-			if (!element.hasAttribute(targetAttributeName)) {
-				element.setAttribute(targetAttributeName, "400");
+			
+			if (!element.hasAttribute(targetAttributeName)) { // targetAttributeName is "duration"
+				if(element.getAttribute("breakindex").equals("4")) {
+					element.setAttribute(targetAttributeName, "240"); //240 //290
+				} else if (element.getAttribute("breakindex").equals("5")) {
+					element.setAttribute(targetAttributeName, "520"); //520 //490
+				} else if (element.getAttribute("breakindex").equals("6")) {
+					element.setAttribute(targetAttributeName, "1240"); //1239
+				} else if (element.getAttribute("breakindex").equals("7")) {
+					element.setAttribute(targetAttributeName, "1240"); //1239
+				} else if (element.getAttribute("breakindex").equals("8")) {
+					element.setAttribute(targetAttributeName, "1240"); //1239
+				} else if (element.getAttribute("breakindex").equals("9")) {
+					element.setAttribute(targetAttributeName, "300"); //300
+				} else
+					element.setAttribute(targetAttributeName,"210");
 			}
+			
+			/*if (!element.hasAttribute(targetAttributeName)) {
+                element.setAttribute(targetAttributeName, "400");
+            }
+            */
 		}
 	}
 
