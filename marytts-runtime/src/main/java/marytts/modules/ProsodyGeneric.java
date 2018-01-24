@@ -83,6 +83,11 @@ public class ProsodyGeneric extends InternalModule {
 																				// xml rule file
 	private boolean convertToBI2Contour;
 	protected HashMap<String, String> toBI2ContourMap;
+	
+	// The code should access to this class every paragraph of the input text. So a static counter will control the current paragraph
+	// that the system is processing. WARNING: after last paragraph, the counter must be returned into 1 for further system calls.
+	public static int CurrentParagraph = 1;
+	//public int LengthParagraphs = 0;
 
 	public ProsodyGeneric() {
 		this((Locale) null);
@@ -278,6 +283,9 @@ public class ProsodyGeneric extends InternalModule {
 		NodeIterator sentenceIt = ((DocumentTraversal) doc).createNodeIterator(doc.getDocumentElement(), NodeFilter.SHOW_ELEMENT,
 				new NameNodeFilter(MaryXML.SENTENCE), false);
 		Element sentence = null;
+		NodeList parag = doc.getElementsByTagName(MaryXML.PARAGRAPH);
+		//LengthParagraphs = parag.getLength();
+		//System.out.println("LengthParagraphs: " + LengthParagraphs);
 		while ((sentence = (Element) sentenceIt.nextNode()) != null) {
 			// And now the actual processing
 			logger.debug("Processing next sentence");
@@ -286,24 +294,30 @@ public class ProsodyGeneric extends InternalModule {
 		if (accentedSyllables) {
 			copyAccentsToSyllables(doc); // ToBI accents on syllables or words?
 		}
-		if (applyParagraphDeclination) {
+		if (applyParagraphDeclination) { 
 			NodeList paragraphs = doc.getElementsByTagName(MaryXML.PARAGRAPH);
+			//System.out.println("num paragraphs PROSODY: " + paragraphs.getLength());
 			for (int i = 0; i < paragraphs.getLength(); i++) {
 				Element paragraph = (Element) paragraphs.item(i);
 				NodeList phrases = paragraph.getElementsByTagName(MaryXML.PHRASE);
-				int steps = phrases.getLength();
-				if (steps <= 1)
+				//NodeList psentences = paragraph.getElementsByTagName(MaryXML.SENTENCE); // sentence level for speaker rate
+				//NodeList ptokens = paragraph.getElementsByTagName(MaryXML.TOKEN);
+				int steps = phrases.getLength(); 
+				if (steps <= 1) {
 					continue;
+				} 
+				
 				for (int j = 0; j < steps; j++) {
 					// Paragraph intonation: embed each <phrase> in a <prosody>
 					// element simulating a paragraph-wide declination phenomenon
 					// superimposed to the phrase-internal declination.
 					int pitchDiff = 10; // difference in percent between first and last phrase
 					int rangeDiff = 40; // difference in percent between first and last phrase
-					double factor = (0.5 - j / (steps - 1f));
-					int pitchValue = (int) (pitchDiff * factor);
+					double factorPitch = (0.5 - j / (steps - 1f));
+					double factorRange = (0.5 - j / (steps - 1f));
+					int pitchValue = (int) (pitchDiff * factorPitch);
 					String pitchString = (pitchValue >= 0 ? "+" : "") + pitchValue + "%";
-					int rangeValue = (int) (rangeDiff * factor);
+					int rangeValue = (int) (rangeDiff * factorRange);
 					String rangeString = (rangeValue >= 0 ? "+" : "") + rangeValue + "%";
 					Element phrase = (Element) phrases.item(j);
 					Element prosody = MaryXML.createElement(phrase.getOwnerDocument(), MaryXML.PROSODY);
@@ -490,7 +504,8 @@ public class ProsodyGeneric extends InternalModule {
 		sentenceType = getSentenceType(tokens);
 		// determine if it is the last sentence in a paragraph
 		boolean paragraphFinal = MaryDomUtils.isLastOfItsKindIn(sentence, MaryXML.PARAGRAPH)
-				&& !MaryDomUtils.isFirstOfItsKindIn(sentence, MaryXML.PARAGRAPH);
+				&& !MaryDomUtils.isFirstOfItsKindIn(sentence, MaryXML.PARAGRAPH) || 
+				MaryDomUtils.isLastOfItsKindIn(sentence, MaryXML.PARAGRAPH) && MaryDomUtils.isFirstOfItsKindIn(sentence, MaryXML.PARAGRAPH);
 
 		// check if it is a sentence with vorfeld
 		boolean inVorfeld = true; // default
@@ -549,8 +564,24 @@ public class ProsodyGeneric extends InternalModule {
 
 			// determine token position in text
 			boolean isFinalToken = (i >= tokens.getLength() - 1); // last token in sentence?
-			if (paragraphFinal && isFinalToken) { // last token in sentence and in paragraph?
-				specialPositionType = "endofpar";
+			System.out.println("is the final token?: " + isFinalToken);
+			System.out.println("is the final of the paragraph?: " + paragraphFinal);
+			if (paragraphFinal && isFinalToken) {// last token in sentence and in paragraph?
+				System.out.println("Current paragraph: " + CurrentParagraph);
+				int RemainParagraphs = MaryXML.NUM_PARAGRAPHS - CurrentParagraph;
+				if(RemainParagraphs == 1) {
+					specialPositionType = "endofpar_ML";
+					CurrentParagraph++;
+				} else if(RemainParagraphs == 0) {
+					specialPositionType = "endofdisc";
+					CurrentParagraph = 1;
+				} else if(RemainParagraphs == (MaryXML.NUM_PARAGRAPHS - 1)) {
+					specialPositionType = "endofpar_FM";
+					CurrentParagraph++;
+				} else if(RemainParagraphs > 1 && RemainParagraphs < (MaryXML.NUM_PARAGRAPHS - 1)) {
+					specialPositionType = "endofpar_MM";
+					CurrentParagraph++;
+				}
 			}
 
 			boolean applyRules = applyRules(token);
@@ -558,7 +589,7 @@ public class ProsodyGeneric extends InternalModule {
 			if (applyRules) { // rule application not turned off
 				// first: assignment of accent = "tone", accent="force"(for force-accents(Druckakzent)) or accent=""
 				// --> determine if the token receives an accent or not
-				// the type of accent(f.e. L+H*) is assigend later
+				// the type of accent(f.e. L+H*) is assigned later
 
 				/*** begin user input check,accent position ***/
 				String forceAccent = getForceAccent(token);
@@ -650,7 +681,7 @@ public class ProsodyGeneric extends InternalModule {
 						bi = Integer.parseInt(boundary.getAttribute("breakindex"));
 					} catch (NumberFormatException nfe) {
 					}
-					if (bi >= 3) { // is it an intermediate or an intoantion phrase?
+					if (bi >= 3) { // is it an intermediate or an intonation phrase?
 						if (!hasAccent && bestCandidate != null) { // no accent!
 							setAccent(bestCandidate, "tone"); // best candidate receives accent
 						}
@@ -1668,9 +1699,9 @@ public class ProsodyGeneric extends InternalModule {
 				if (!t.getAttribute("ph").equals("")) {
 					Element firstToken = (Element) tokens.item(i);
 
-					// setInterrogYN contains possible part of speechs of first word in yes-no question
+					// setInterrogYN contains possible part of speeches of first word in yes-no question
 					Set<String> setInterrogYN = (Set<String>) listMap.get("firstPosInQuestionYN");
-					// setInterrogW contains possible part of speechs of first word in wh-question
+					// setInterrogW contains possible part of speeches of first word in wh-question
 					Set<String> setInterrogW = (Set<String>) listMap.get("firstPosInQuestionW");
 
 					String posFirstWord = firstToken.getAttribute("pos");
